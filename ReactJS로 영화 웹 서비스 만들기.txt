@@ -1,0 +1,344 @@
+[ReactJS로 영화 웹 서비스 만들기]
+
+* Component는 HTML을 반환하는 함수
+
+* Jsx: JavaScript와 HTMl 사이의 조합
+
+* Component 만드는 법(1. Potato.js로 페이지를 따로)
+import React from "react";
+
+function Potato() {
+	return <h3>Potato</h3>;
+}
+
+export default Potato;
+
++ (App.js)
+import Potato from "./Potato";
+
+function APP()에다가 <Potato />
+
+* Component 만드는 법(2. App.js에 function Potato()를 넣음)
+function Potato(){
+	return <h1>I like Potato</h1>;
+}
+
+function App(){
+	return(
+		<div>
+		  <h1>Hello</h1>
+		  <Potato />
+		</div>
+	)
+}
+
+* Jsx와 HTML 비슷
+Jsx: <Food name="kimchi">
+HTML: <Food class="kimchi">
+
+* Object 내 인자를 얻는 법: props.인자명 또는 ({ 인자명 })
+* 이를 이용하는 방법:
+<h1>I like {인자명}</h1> 
+
+* Component를 이용해서 쉽게 하는 법
+function Food({ fav }){
+	return <h1>I like {fav}</h1>;
+}
+
+function App(){
+	return(
+		<div>
+		  <h1>Hello</h1>
+		  <Food fav="Kimchi" />
+		  <Food fav="ramen" />
+		  <Food fav="samgiopsal" />
+		  <Food fav="chukumi" />
+		</div>
+	)
+}
+
+(웹페이지) ==>>
+Hello
+I like Kimchi
+I like ramen
+I like samgiopsal
+I like chukumi
+
+* map: 렌더링을 해줌. array의 각 item에 function을 적용하고 array를 줌
+
+* 웹사이트에 동적 데이터를 추가하는 방법(일일히 추가X)
+- 함수 사용
+
+function Food({ name, picture}){
+	return (
+	  <div>
+	    <h2>I like {name}</h2>
+	    <img scr={picture} />
+	  </div>
+	)
+}
+
+const foodILike = [		//Object임
+	{
+	  name: "Kimchi",
+	  img: "https://www.google.com/url?sa=i&url=https%3A%2F%2Fnamu.wiki%2Fw%2F%25EB%25B0%25B0%25EC%25B6%2594%25EA%25B9%2580%25EC%25B9%2598&psig=AOvVaw10Mf7DKiNdYj5bP-T1kl2m&ust=1632985793982000&source=images&cd=vfe&ved=0CAsQjRxqFwoTCNCp2qLQo_MCFQAAAAAdAAAAABAM"
+	},
+	{
+	  name:"Samgyeopsal",
+	  img: "https:// ..."
+	},
+	. 
+	.
+	.
+]
+
+function App(){
+	return(
+	  <div>
+	    {foodILike.map(dish => (		//dish는 넘겨 받는 인자명임
+	      <Food name={dish.name} picture={dish.img}/>
+	     ))}
+	  </div>
+	);
+}
+
+* function 따로 빼기
+
+function renderFood(dish){
+	return <Food name={dish.name} picture{dish.img} />
+}
+
+function App(){
+	return <div>{foodILike.map(renderFood)} </div>;
+}
+
+* unique key 에러: 각 인자에 id를 준다
+
+* prop-types: 내가 전달받은 props가 내가 원하는 props가 맞는지 확인해줌
+콘솔 	//npm i prop-types
+헤더	//import PropTypes from "prop-types";
+
+Food.propTypes = {
+	name: PropTypes.string.isRequired,
+	picture: PropTypes.string.isRequired,
+	rating: PropTypes.number.isRequired
+};
+
+~~~~~ 음식 예제 끝
+
+* 이전에 했던 Component: function Component
+이제 배울 Component: Class Component
+
+* Class Component: return 없음. 대신 render method를 가지고 있음.
+ 
+* Function component는 function이고 무엇인가를 return함. 그리고 screen에 표시함.
+* Class component는 class임. 하지만 react component로부터 확장되고 screen에 표시함.
+
+* 
+class App extends React.Component{
+	render(){
+	  return <h1>Im a class component</h1>
+	}
+}
+
+* state는 Object이고 component의 data를 넣을 공간이고 이 데이터는 동적임
+
+* state = {
+	count: 0
+};
+
+add = () => {
+	this.setState(current => ({ count: current.count + 1}));
+};
+
+minus = () => {
+	this.setState(current => ({ count: current.count - 1}));
+};
+
+render(){
+	return <div>The number is: {this.state.count}</div>	//새로 바뀐 부분
+	//추가
+	<button onClick={this.add}>Add</button>
+	<button onClick={this.Minus}>Minus</button>
+}
+
+* this.setState
+
+* 매순간 setState를 호출할 때마다 react는 새로운 state와 함께 render function을 호출함
+
+* constructor: redner 이전에 작동하는 Mounting function
+* componentDidMount: render 이후 작동하는 Mounting function
+
+* compoenetDidUpdate: render 이후 작동하는 Updating function
+
+* componenetWillUnmount: mount가 죽으면 작동됨
+
+* componenetDidMount를 이용하여 data를 fetch
+-> API로부터 data fetching이 완료되면 그러면 movie를 Render하고 map을 만들고 movie를 render 할 것임.
+* 
+state={
+	isLoading: true
+	//movie 배열 미리 추가
+	movies: []
+};
+componentDidMount(){
+	setTimeout(() => { isLoading: flase });
+	}, 6000);
+}
+render(){
+	const{ isLoading } = this.state;
+	return <div>{isLoading ? "Loading..." : "We are ready"}</div>; 
+} 
+
+========= 웹페이지 만들기 시작
+
+* 일반저긍로 사람들이 JavaScript에서 data를 fetch하는 방법은 fetch를 이용하는 것임. 하지만 니꼴라스는 Axios를 사용할 것임. Axios는 fetch 위에 있는 작은 ㅔㄹ이어 같음.
+- npm install axios 필요함
+
+* YTS에서 만든 API(listMovie)를 사용할 것임.
+
+* Json view를 쓰면 예쁘게 보임
+
+* 니꼴라스가 올린 YTS proxy list를 쓰셈 
+
+* import axios from "axios";
+import Movie from "./Movie";
+import "./App.css"
+
+state = {
+	isLoading: true;
+	movies: []
+};
+getMovies = async () => {
+	const {data: {data: {movies}}} = await axios.get("yts-proxy 링크?sort_by=rating");	//sort_by=rating 사용
+	this.setState({movies, isLoading: false});		//API에서 Movielist를 다 불러오면 We are ready로 바뀜 
+}
+componenetDidMount(){
+	this.getMovies();	
+}
+render() {
+	const{ isLoading, movies } = this.state;
+	return <div>{isLoading ? "Loading..." : movies.map(movie => {
+		<Movie key={movie.id} id={movie.id} year={movie.year} title={movie.title} summary={movie.summary} poster={movie.medium_cover_image} genres={movie.genres}/>
+	})}</div>;
+}
+
+* Movie.js		//movie를 render
+import React from "react";
+import PropTypes from "prop-types";
+import "./Movie.css"
+
+function Movie({year, title, summary, poster, genres}){
+	return (
+	  <div className="movie">
+	    <img scr={poster} alt={title} title={title} />
+	    <div className="movie__data">
+	      <h3 className="movie__title">{title}</h3>
+	      <h5 className="movie__year">{year}</h5>
+	      <ul className="genres">{geners.map((genre, index) => <li key= {index} className="genres__genre">{genre<li>
+                     ))}
+	      </ul>
+	      <p className="movie__summary">{summary.slice(0, 180)}. . .</p>
+	    </div>
+	  </div>
+	);
+}
+
+Movie.propTypes = {
+	id: PropTypes.number.isrequired,
+	year: PropTypes.number.isrequired,
+	title: PropTypes.string.isrequired,
+	summary: PropTypes.number.isrequired,
+	poser: PropTypes.string.isrequired,
+	genres: PropTypes.arrayOf(PropTypes.string).isRequired
+}
+
+export default Movie;
+
+* App.css
+body{
+	background-color: #f2f2f2;
+}
+
+* Deploying to Github Pages
+npm i gh-pages	//github에 업로드하는 것을 허가해주는 모듈임
+package.json에 home 추가 해야 함	//프로젝트 이름에 대문자X 띄어쓰기X
+scripts에 deploy 추가 
+ㄴ "deploy": "gh-pages"
+빌드: 콘솔에 npm run build	//최소화됨
+ㄴ "deploy": "gh-pages -d build"
+ㄴ "predeploy": "npm run build"
+콘솔: npm run deployh
+
+* 네비게이션: react-router dom 사용
+npm install react-router-dom
+
+* components 폴더: css, jss
+routes 폴더: About.js, Home.js, Home.css
+
+* Building the Router
+function App(){
+	return(
+	  <HashRouter>	//BrowserRouter도 있는데 Git에 올리기 힘듦.
+	    <Route path="/" exact={true} component={Home} />	//exact = Home만 보여줌
+	    <Route path="/about" component={About} />
+	  </HashRouter>
+	)
+}
+
+* navigation.js		//Router 안에 있어야 함
+import React from "react";
+import { Link } from "react-router-dom";
+
+function Navigation(){
+	return(
+	  <div>
+	    <Link to="/">Home</Link>
+	    <Link to={		//router에 string 말고 Object도 넣을 수 있음
+	      pathname= "/about",
+	      state: {
+	        fromNavigation: true
+	      }
+	    }>About</Link>
+	  </div>
+	);
+}
+
+* Movie.js에서 movie-detail로 갈 때
+<Link to = {{
+	pathname: "/movie-detail",
+	state: {
+	  year,
+	  title,
+	  summary,
+	  poster,
+	  genres
+	}
+}}
+>
+
+* Detail.js		//Movie.js 가서 pathname: '/movie/${id}'로 변경
+		//App.js 가서 path="/movie/:id"로 변경
+import React from "react";
+
+class Detail extends React.Component{
+	componenetDidMount(){
+	  const {loaction, history} = this.props;
+	  if (location,state === undefined){	//만약 영화 목록 페이지 온 것이 아니라면 
+	    history.push("/");
+	  } 
+	}
+	render(){
+	  const {location} = this.props;
+	  if(location.state){
+	    return <span>{location.state.title}</span>;
+	  } else{
+	    return null;
+	  }
+	  }
+	}
+}
+
+* 완강~~~ 
++ 계속 로딩하는 게 싫다면 redux를 사용
++ redux는 state를 저장함.
